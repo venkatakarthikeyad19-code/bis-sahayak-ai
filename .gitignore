@@ -1,0 +1,40 @@
+# Environment Variables & Secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python & Virtual Environments
+venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+.coverage
+htmlcov/
+
+# Databases & Vector DB
+*.db
+*.sqlite
+*.sqlite3
+chroma_db/
+
+# Node.js & Next.js
+node_modules/
+.next/
+out/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
