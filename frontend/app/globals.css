@@ -93,9 +93,16 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+  html {
+    overflow-x: hidden;
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    /* Ensure touch scrolling is smooth on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 }
 

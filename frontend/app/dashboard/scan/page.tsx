@@ -116,7 +116,7 @@ export default function ScanPage() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-6 p-4 lg:p-6">
+    <div className="flex h-full flex-col gap-4 sm:gap-6 p-3 sm:p-4 lg:p-6">
       <PageHeader
         title="Scan & Verify"
         subtitle="Upload a product rating label or paste regulatory specifications to cross-reference authentic BIS licenses, detect counterfeit markings, and confirm quality control orders."
@@ -339,7 +339,7 @@ export default function ScanPage() {
                   <h4 className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
                     Extracted Regulatory Entities
                   </h4>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div className="rounded-lg border border-border bg-card p-2.5">
                       <span className="text-[10px] text-text-muted block">Product Name</span>
                       <span className="font-semibold text-foreground text-xs">{result.product}</span>

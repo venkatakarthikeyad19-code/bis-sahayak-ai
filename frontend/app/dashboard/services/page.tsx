@@ -30,7 +30,7 @@ const SERVICES = [
 
 export default function ServicesPage() {
   return (
-    <div className="flex flex-col gap-8 p-6 lg:p-8">
+    <div className="flex flex-col gap-6 sm:gap-8 p-4 sm:p-6 lg:p-8">
       <PageHeader
         title="BIS Services"
         subtitle="Explore Bureau of Indian Standards certification schemes and access the official portals to begin your application."
@@ -77,7 +77,7 @@ export default function ServicesPage() {
 
       {/* Need help deciding — gradient-bordered callout */}
       <div className="rounded-xl gradient-primary p-px shadow-[var(--shadow-card)]">
-        <div className="flex flex-col items-center gap-4 rounded-[calc(12px-1px)] bg-card px-6 py-10 text-center">
+        <div className="flex flex-col items-center gap-4 rounded-[calc(12px-1px)] bg-card px-4 py-8 sm:px-6 sm:py-10 text-center">
           <span className="flex size-12 items-center justify-center rounded-full bg-primary/15 text-primary">
             <ShieldCheck className="size-6" aria-hidden="true" />
           </span>

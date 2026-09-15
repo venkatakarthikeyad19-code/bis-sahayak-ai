@@ -12,7 +12,7 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="space-y-1.5">
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight text-foreground text-balance">
+        <h1 className="text-xl sm:text-2xl lg:text-[28px] font-bold leading-tight tracking-tight text-foreground text-balance">
           {title}
         </h1>
         {subtitle ? (

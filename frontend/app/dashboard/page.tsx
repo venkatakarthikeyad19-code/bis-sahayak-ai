@@ -83,6 +83,7 @@ export default function AiAssistantPage() {
   const [activeData, setActiveData] = useState<ChatResponse | null>(null)
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>({})
   const [activeTab, setActiveTab] = useState<'standards' | 'roadmap' | 'checklist'>('standards')
+  const [mobilePanel, setMobilePanel] = useState<'chat' | 'workspace'>('chat')
   const [isListening, setIsListening] = useState(false)
   const [speakingId, setSpeakingId] = useState<number | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -321,26 +322,26 @@ export default function AiAssistantPage() {
   const showQuickReplies = messages.length <= 2 && !loading
 
   return (
-    <div className="flex h-full flex-col bg-background p-4 lg:p-5">
+    <div className="flex h-full flex-col bg-background p-3 sm:p-4 lg:p-5">
       {/* Slim top bar */}
-      <header className="mb-4 flex h-14 items-center gap-3 rounded-xl border border-border bg-card px-4 shadow-[var(--shadow-card)]">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full gradient-primary">
-          <Sparkles className="size-[18px] text-primary-foreground" aria-hidden="true" />
+      <header className="mb-3 md:mb-4 flex min-h-12 sm:min-h-14 items-center gap-2.5 sm:gap-3 rounded-xl border border-border bg-card px-3 sm:px-4 py-2 shadow-[var(--shadow-card)]">
+        <span className="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-full gradient-primary">
+          <Sparkles className="size-4 sm:size-[18px] text-primary-foreground" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-sm font-semibold text-foreground">BIS Sahayak AI</h1>
-          <p className="truncate text-[11px] text-text-secondary">
+          <p className="truncate text-[10px] sm:text-[11px] text-text-secondary">
             Authoritative Bureau of Indian Standards Decision Support • Powered by Gemini
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {activeData?.product_profile && (
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-              <Sparkles className="size-3" />
-              {activeData.product_profile.product}
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary max-w-[140px]">
+              <Sparkles className="size-3 shrink-0" />
+              <span className="truncate">{activeData.product_profile.product}</span>
             </span>
           )}
-          <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+          <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
@@ -350,10 +351,49 @@ export default function AiAssistantPage() {
         </div>
       </header>
 
+      {/* Mobile View Switcher (< md) */}
+      <div className="flex md:hidden rounded-lg border border-border bg-secondary/80 p-1 mb-3 shrink-0">
+        <button
+          type="button"
+          onClick={() => setMobilePanel('chat')}
+          className={cn(
+            'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors',
+            mobilePanel === 'chat'
+              ? 'bg-card text-foreground shadow-xs'
+              : 'text-text-secondary hover:text-foreground'
+          )}
+        >
+          <Send className="size-3.5" />
+          <span>AI Chat</span>
+          {messages.length > 2 && (
+            <span className="size-1.5 rounded-full bg-primary" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobilePanel('workspace')}
+          className={cn(
+            'flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-colors',
+            mobilePanel === 'workspace'
+              ? 'bg-card text-foreground shadow-xs'
+              : 'text-text-secondary hover:text-foreground'
+          )}
+        >
+          <FileText className="size-3.5" />
+          <span>Compliance Workspace</span>
+          {activeData && (
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          )}
+        </button>
+      </div>
+
       {/* Two-pane layout */}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-[6fr_4fr]">
         {/* LEFT: Chat panel */}
-        <section className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
+        <section className={cn(
+          "flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]",
+          mobilePanel === 'chat' ? 'flex' : 'hidden md:flex'
+        )}>
           <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5">
             {messages.map((m) => (
               <MessageBubble
@@ -378,13 +418,13 @@ export default function AiAssistantPage() {
 
             {/* Suggested quick-reply chips */}
             {showQuickReplies ? (
-              <div className="flex flex-wrap gap-2 pl-[38px] pt-1">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 pl-0 sm:pl-[38px] pt-1">
                 {QUICK_REPLIES.map((q) => (
                   <button
                     key={q}
                     type="button"
                     onClick={() => handleSendMessage(q)}
-                    className="rounded-full border border-border bg-card px-3 py-1.5 text-[12px] font-medium text-text-secondary transition-all hover:-translate-y-px hover:border-primary/50 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left"
+                    className="rounded-full border border-border bg-card px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-[12px] font-medium text-text-secondary transition-all hover:-translate-y-px hover:border-primary/50 hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-left"
                   >
                     {q}
                   </button>
@@ -395,21 +435,21 @@ export default function AiAssistantPage() {
           </div>
 
           {/* Input pill */}
-          <div className="px-4 pb-4 pt-1 sm:px-5">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-secondary p-1.5 transition-colors focus-within:border-primary/60">
+          <div className="px-3 pb-3 pt-1 sm:px-5 sm:pb-4">
+            <div className="flex items-center gap-1.5 sm:gap-2 rounded-full border border-border bg-secondary p-1 sm:p-1.5 transition-colors focus-within:border-primary/60">
               <button
                 type="button"
                 onClick={toggleListen}
                 aria-label="Use microphone"
                 className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  'flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   isListening
                     ? 'bg-rose-500 text-white animate-pulse'
                     : 'text-text-secondary hover:bg-accent hover:text-primary'
                 )}
                 title={isListening ? 'Listening... click to stop' : 'Click to speak'}
               >
-                {isListening ? <MicOff className="size-[18px]" /> : <Mic className="size-[18px]" />}
+                {isListening ? <MicOff className="size-4 sm:size-[18px]" /> : <Mic className="size-4 sm:size-[18px]" />}
               </button>
               <input
                 value={input}
@@ -422,16 +462,16 @@ export default function AiAssistantPage() {
                 }}
                 disabled={loading}
                 placeholder="Ask about BIS certification, standards, or products..."
-                className="h-10 flex-1 bg-transparent px-2 text-sm text-foreground placeholder:text-text-muted focus:outline-none disabled:opacity-50"
+                className="h-9 sm:h-10 min-w-0 flex-1 bg-transparent px-2 text-xs sm:text-sm text-foreground placeholder:text-text-muted focus:outline-none disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={() => handleSendMessage()}
                 disabled={loading || !input.trim()}
                 aria-label="Send message"
-                className="flex size-10 shrink-0 items-center justify-center rounded-full gradient-primary text-primary-foreground transition-transform hover:-translate-y-px disabled:opacity-40 disabled:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                className="flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-full gradient-primary text-primary-foreground transition-transform hover:-translate-y-px disabled:opacity-40 disabled:hover:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
               >
-                <Send className="size-[16px]" aria-hidden="true" />
+                <Send className="size-3.5 sm:size-[16px]" aria-hidden="true" />
               </button>
             </div>
 
@@ -454,18 +494,21 @@ export default function AiAssistantPage() {
         </section>
 
         {/* RIGHT: Standards & Compliance Workspace panel */}
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]">
+        <aside className={cn(
+          "flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)]",
+          mobilePanel === 'workspace' ? 'flex' : 'hidden md:flex'
+        )}>
           {/* Header & Tabs */}
-          <div className="border-b border-border px-5 py-3.5">
-            <div className="flex items-center justify-between">
-              <div>
+          <div className="border-b border-border px-3 sm:px-5 py-3 sm:py-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0">
                 <h2 className="text-sm font-semibold text-foreground">Compliance Workspace</h2>
-                <p className="text-[11px] text-text-secondary">
+                <p className="text-[11px] text-text-secondary truncate">
                   {activeData?.product_profile ? activeData.product_profile.product : 'Suggested Standards & Quick Scenarios'}
                 </p>
               </div>
               {activeData && (
-                <div className="flex rounded-lg border border-border bg-secondary p-0.5 text-xs">
+                <div className="flex shrink-0 rounded-lg border border-border bg-secondary p-0.5 text-xs">
                   <button
                     onClick={() => setActiveTab('standards')}
                     className={cn(
@@ -517,7 +560,7 @@ export default function AiAssistantPage() {
                             {activeData.product_profile.category || 'BIS Regulated'}
                           </span>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
                           <div>
                             <span className="text-text-muted block">Intended Use:</span>
                             <span className="font-medium text-foreground">{activeData.product_profile.intended_use || 'Domestic / Commercial'}</span>
@@ -527,7 +570,7 @@ export default function AiAssistantPage() {
                             <span className="font-medium text-foreground">India (BIS Jurisdiction)</span>
                           </div>
                           {activeData.product_profile.material && (
-                            <div className="col-span-2">
+                            <div className="sm:col-span-2">
                               <span className="text-text-muted block">Materials:</span>
                               <span className="font-medium text-foreground">{activeData.product_profile.material}</span>
                             </div>
@@ -810,7 +853,7 @@ export default function AiAssistantPage() {
                 <div className="text-xs text-text-secondary">
                   Tap any common product below to instantly analyze its mandatory BIS standards, clauses, and laboratory readiness:
                 </div>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
                   {PRODUCTS.map((p) => {
                     const Icon = p.icon
                     return (
@@ -868,7 +911,7 @@ function MessageBubble({
       ) : null}
       <div
         className={cn(
-          'max-w-[78%] rounded-xl px-4 py-3 text-xs leading-relaxed space-y-2',
+          'max-w-[88%] sm:max-w-[78%] rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs leading-relaxed space-y-2',
           isAssistant
             ? 'rounded-tl-sm border border-border bg-card text-foreground shadow-[var(--shadow-card)]'
             : 'rounded-tr-sm bg-accent text-foreground'
