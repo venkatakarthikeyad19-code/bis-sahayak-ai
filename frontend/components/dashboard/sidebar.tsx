@@ -128,7 +128,7 @@ export function Sidebar() {
 
             {/* Mobile Readiness Indicator */}
             <div className="pt-2 border-t border-sidebar-border">
-              <ReadinessIndicator value={68} />
+              <ReadinessIndicator />
             </div>
           </aside>
         </div>
@@ -181,7 +181,7 @@ export function Sidebar() {
 
         {/* Readiness indicator pinned to bottom */}
         <div className="p-3">
-          <ReadinessIndicator value={68} />
+          <ReadinessIndicator />
         </div>
       </aside>
 

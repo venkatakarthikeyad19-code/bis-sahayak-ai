@@ -21,6 +21,7 @@ import {
 import { PageHeader } from '@/components/dashboard/page-header'
 import { cn } from '@/lib/utils'
 import { analyzeLabelFile, verifyLabelText, type OCRVerificationResult } from '@/lib/api'
+import { useReadiness } from '@/lib/readiness-context'
 
 const SAMPLE_SCENARIOS = [
   {
@@ -64,6 +65,21 @@ export default function ScanPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { setScore, setProductName } = useReadiness()
+
+  function updateReadinessFromResult(data: OCRVerificationResult, defaultName?: string) {
+    const prod = data.extracted_standard?.product || defaultName || 'Verified Product'
+    if (data.verification_status === 'verified') {
+      setScore(90)
+      setProductName(prod)
+    } else if (data.verification_status === 'conflict') {
+      setScore(20)
+      setProductName(`Flagged: ${prod}`)
+    } else {
+      setScore(50)
+      setProductName(prod)
+    }
+  }
 
   async function handleFileSelect(file: File) {
     if (!file) return
@@ -75,12 +91,14 @@ export default function ScanPage() {
     try {
       const data = await analyzeLabelFile(file)
       setResult(data)
+      updateReadinessFromResult(data, file.name)
     } catch (err: any) {
       console.error(err)
       // Fallback to text verification using file name
       try {
         const data = await verifyLabelText(file.name, file.name)
         setResult(data)
+        updateReadinessFromResult(data, file.name)
       } catch (fallbackErr) {
         setErrorMsg('Failed to process image. Ensure backend server is running on port 8000.')
       }
@@ -100,6 +118,7 @@ export default function ScanPage() {
     try {
       const data = await verifyLabelText(raw, hint)
       setResult(data)
+      updateReadinessFromResult(data, hint || activeScenario || 'Product Label')
     } catch (err: any) {
       console.error(err)
       setErrorMsg('Failed to connect to backend OCR verification API. Ensure backend is running.')
